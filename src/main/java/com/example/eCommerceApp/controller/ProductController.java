@@ -2,6 +2,7 @@ package com.example.eCommerceApp.controller;
 
 import java.util.List;
 
+import com.example.eCommerceApp.repository.ProductRepository;
 import com.example.eCommerceApp.response.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,9 @@ import com.example.eCommerceApp.service.ProductService;
 public class ProductController {
     @Autowired
     private ProductService service;
+
+    @Autowired
+    private ProductRepository repo;
 
     @RequestMapping("/")
     public String greet() {
@@ -36,16 +40,17 @@ public class ProductController {
 
     @RequestMapping("/product/{id}")
     public ResponseEntity<Object> getProduct(@PathVariable int id) {
-        return ResponseHandler.responseBuilder("product found",  HttpStatus.OK, service.getProduct(id));
+        return ResponseHandler.responseBuilder("product found", HttpStatus.OK, service.getProduct(id));
     }
 
     @PostMapping("/product")
     public ResponseEntity<?> addProduct(@RequestBody Product product) {
         try {
             Product product1 = service.addProduct(product);
-            return ResponseHandler.responseBuilder("product added successfully",  HttpStatus.OK, product1);
+            return ResponseHandler.responseBuilder("product added successfully", HttpStatus.OK, product1);
         } catch (Exception e) {
-            return ResponseHandler.responseBuilder("error creating product",  HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            return ResponseHandler.responseBuilder("error creating product", HttpStatus.INTERNAL_SERVER_ERROR,
+                    e.getMessage());
         }
     }
 
@@ -58,26 +63,37 @@ public class ProductController {
             Product product1 = service.updateProduct(id, product);
 
             if (product1 != null)
-                return ResponseHandler.responseBuilder("Updated successfully",  HttpStatus.OK, product1);
+                return ResponseHandler.responseBuilder("Updated successfully", HttpStatus.OK, product1);
 
             else
-                return ResponseHandler.responseBuilder("Failed to update",  HttpStatus.BAD_REQUEST, null);
+                return ResponseHandler.responseBuilder("Failed to update", HttpStatus.BAD_REQUEST, null);
 
         } else {
-            return ResponseHandler.responseBuilder("Product not found",  HttpStatus.NOT_FOUND, null);
+            return ResponseHandler.responseBuilder("Product not found", HttpStatus.NOT_FOUND, null);
         }
     }
 
     @DeleteMapping("/product/{id}")
-    public ResponseEntity<Object> deleteProduct(@PathVariable int id){
+    public ResponseEntity<Object> deleteProduct(@PathVariable int id) {
         Product prod = service.getProduct(id);
 
-        if(prod != null) {
+        if (prod != null) {
             service.deleteProduct(id);
-            return ResponseHandler.responseBuilder("Deleted",  HttpStatus.OK, prod);
+            return ResponseHandler.responseBuilder("Deleted", HttpStatus.OK, prod);
 
+        } else
+            return ResponseHandler.responseBuilder("Product not found", HttpStatus.NOT_FOUND, null);
+    }
+
+    @GetMapping("/product/brand/{brand}")
+    public ResponseEntity<Object> getBrand(@PathVariable String brand) {
+        List<Product> products = repo.getBrand(brand);
+
+        if (products != null && !products.isEmpty()) {
+            return ResponseHandler.responseBuilder("Products fetched successfully", HttpStatus.OK, products);
+        } else {
+            return ResponseHandler.responseBuilder("No products found for the specified brand", HttpStatus.NOT_FOUND,
+                    null);
         }
-        else
-            return ResponseHandler.responseBuilder("Product not found",  HttpStatus.NOT_FOUND, null);
     }
 }
