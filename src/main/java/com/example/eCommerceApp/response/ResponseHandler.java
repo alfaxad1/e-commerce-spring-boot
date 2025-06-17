@@ -13,7 +13,9 @@ public class ResponseHandler {
         Map <String, Object> response = new HashMap<>();
         response.put("message" , message);
         response.put("HttpStatus", httpStatus);
-        response.put("data", responseObject);
+        if (responseObject != null) {
+            response.put("data", responseObject);
+        }
 
         return new ResponseEntity<>(response, httpStatus);
     }

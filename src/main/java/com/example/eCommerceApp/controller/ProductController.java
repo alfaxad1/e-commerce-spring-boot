@@ -2,7 +2,6 @@ package com.example.eCommerceApp.controller;
 
 import java.util.List;
 
-import com.example.eCommerceApp.repository.ProductRepository;
 import com.example.eCommerceApp.response.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,9 +18,6 @@ public class ProductController {
     @Autowired
     private ProductService service;
 
-    @Autowired
-    private ProductRepository repo;
-
     @RequestMapping("/")
     public String greet() {
         return "Hello world";
@@ -31,11 +27,11 @@ public class ProductController {
     public ResponseEntity<Object> getAllProducts() {
         List<Product> product = service.getAllProducts();
 
-        if (product != null)
+        if (product != null && !product.isEmpty())
             return ResponseHandler.responseBuilder("Products fetched successfully", HttpStatus.OK, product);
 
         else
-            return ResponseHandler.responseBuilder("Products fetched successfully", HttpStatus.OK, null);
+            return ResponseHandler.responseBuilder("no product found", HttpStatus.NOT_FOUND, null);
     }
 
     @RequestMapping("/product/{id}")
@@ -62,7 +58,7 @@ public class ProductController {
             product.setId(id);
             Product product1 = service.updateProduct(id, product);
 
-            if (product1 != null)
+            if (product1 != null && !product1.isAvailable())
                 return ResponseHandler.responseBuilder("Updated successfully", HttpStatus.OK, product1);
 
             else
@@ -87,7 +83,7 @@ public class ProductController {
 
     @GetMapping("/product/brand/{brand}")
     public ResponseEntity<Object> getBrand(@PathVariable String brand) {
-        List<Product> products = repo.getBrand(brand);
+        List<Product> products = service.getBrand(brand);
 
         if (products != null && !products.isEmpty()) {
             return ResponseHandler.responseBuilder("Products fetched successfully", HttpStatus.OK, products);

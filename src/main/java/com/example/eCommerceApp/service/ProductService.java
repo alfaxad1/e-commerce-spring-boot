@@ -4,9 +4,7 @@ import java.util.List;
 
 import com.example.eCommerceApp.exceptions.ProductNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
-
 import com.example.eCommerceApp.model.Product;
 import com.example.eCommerceApp.repository.ProductRepository;
 
@@ -15,25 +13,25 @@ public class ProductService {
     @Autowired
     private ProductRepository repo;
 
-    //get all products
+    // get all products
     public List<Product> getAllProducts() {
         return repo.findAll();
     }
 
-    //get a product by id
+    // get a product by id
     public Product getProduct(int id) {
-        if(repo.findById(id).isEmpty())
+        if (repo.findById(id).isEmpty())
             throw new ProductNotFoundException("Product doesn't exist");
 
         return repo.findById(id).get();
     }
 
-    //create a product
+    // create a product
     public Product addProduct(Product product) {
         return repo.save(product);
     }
 
-    //update a product
+    // update a product
     public Product updateProduct(int id, Product product) {
         Product existingProduct = repo.findById(id).orElse(null);
         if (existingProduct == null) {
@@ -50,11 +48,15 @@ public class ProductService {
         return repo.save(existingProduct);
     }
 
-    //delete a product
+    // delete a product
     public void deleteProduct(int id) {
         repo.deleteById(id);
     }
 
-    //get brand
+    // get brand
+    public List<Product> getBrand(String brand) {
+        return repo.getBrand(brand);
+
+    }
 
 }
