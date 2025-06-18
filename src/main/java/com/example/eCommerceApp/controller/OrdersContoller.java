@@ -17,23 +17,28 @@ import java.util.List;
 public class OrdersContoller {
     @Autowired
     private OrderService service;
+
+    @Autowired
     private OrderRepository repo;
 
     @RequestMapping("/orders")
-    public ResponseEntity<Object> getAllOrders(){
+    public ResponseEntity<Object> getAllOrders() {
         List<?> orders = repo.getAllOrders();
         return ResponseHandler.responseBuilder("orders fetched successfully", HttpStatus.OK, orders);
     }
 
-    @RequestMapping("/order")
-    public ResponseEntity<Object> getOrders(){
-        List<Orders> orders = service.getOrders();
-        return ResponseHandler.responseBuilder("orders fetched successfully", HttpStatus.OK, orders);
+    @RequestMapping("/order/{id}")
+    public ResponseEntity<Object> getOrders(@PathVariable Integer id) {
+        List<Orders> orders = repo.getOrdersByCustomerId(id);
+        if (orders != null)
+            return ResponseHandler.responseBuilder("orders fetched successfully", HttpStatus.OK, orders);
+        else
+            return ResponseHandler.responseBuilder("orders not found", HttpStatus.NOT_FOUND, null);
     }
 
     @PostMapping("/orders")
-    public ResponseEntity<?> createOrder(@RequestBody Orders order){
+    public ResponseEntity<?> createOrder(@RequestBody Orders order) {
         Orders order1 = service.createOrder(order);
-        return ResponseHandler.responseBuilder("order created successfully", HttpStatus.CREATED, null);
+        return ResponseHandler.responseBuilder("order created successfully", HttpStatus.CREATED, order1);
     }
 }

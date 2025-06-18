@@ -10,8 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -27,13 +25,12 @@ public class Orders {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    
     private Product product;
-//    private Integer customerId;
-//    private Integer productId;
+
+//     private Integer customerId;
+//     private Integer productId;
     private String orderId;
     private Integer quantity;
     private float totalCost;
 
-    
 }
